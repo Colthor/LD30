@@ -41,7 +41,7 @@ public class GameScript : MonoBehaviour {
 		scs.InitialiseChunk(ShipChunkScript.ChunkType.BaseChunk);
 
 		TileMapScript tms = baseChunk.GetComponent<TileMapScript>();
-		player = (GameObject)Instantiate(SpaceonautPrefab, new Vector3(tms.Squares_X * tms.Square_Size * 0.5f, tms.Squares_Y * tms.Square_Size * 0.5f, 0f), Quaternion.identity);
+		player = (GameObject)Instantiate(SpaceonautPrefab, new Vector3(/*tms.Squares_X * tms.Square_Size * 0.5f*/0.0f, /*tms.Squares_Y * tms.Square_Size * 0.5f*/0.0f, 0f), Quaternion.identity);
 		PlayerScript ps = player.GetComponent<PlayerScript>();
 		ps.globalScript = this;
 

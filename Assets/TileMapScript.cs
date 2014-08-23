@@ -186,7 +186,9 @@ public class TileMapScript : MonoBehaviour
 		float height = dy * Square_Size;
 		BoxCollider2D boxcoll = go.AddComponent<BoxCollider2D>();
 		boxcoll.size = new Vector2(width,height);
-		boxcoll.center= new Vector2(xMin*Square_Size + 0.5f*width, (Squares_Y*Square_Size) - (yMin*Square_Size + 0.5f*height));
+		float halfYsize = ((float)(Squares_Y*Square_Size))/2.0f;
+		float halfXsize = ((float)(Squares_X*Square_Size))/2.0f;
+		boxcoll.center= new Vector2(xMin*Square_Size + 0.5f*width - halfXsize, (Squares_Y*Square_Size) - (yMin*Square_Size + 0.5f*height) - halfYsize);
 		go.transform.position = transform.position;
 		go.transform.rotation = transform.rotation;
 		go.transform.localScale = transform.lossyScale;
@@ -250,6 +252,9 @@ public class TileMapScript : MonoBehaviour
 		int numVerts = 4 * numSquares;
 		int numTriPoints = 6 * numSquares;
 
+		float halfYsize = ((float)(Squares_Y*Square_Size))/2.0f;
+		float halfXsize = ((float)(Squares_X*Square_Size))/2.0f;
+
 		Vector3[] verts = new Vector3[numVerts];
 		Vector3[] normals = new Vector3[numVerts];
 		Vector2[] uv = new Vector2[numVerts];
@@ -263,10 +268,10 @@ public class TileMapScript : MonoBehaviour
 		{
 			for(int x = 0; x < Squares_X; x++)
 			{
-				verts[squareNum*4  ] = new Vector3(x*Square_Size,     (Squares_Y*Square_Size) - y*Square_Size, 0.0f);
-				verts[squareNum*4+1] = new Vector3((x+1)*Square_Size, (Squares_Y*Square_Size) - y*Square_Size, 0.0f);
-				verts[squareNum*4+2] = new Vector3(x*Square_Size,     (Squares_Y*Square_Size) - (y+1)*Square_Size, 0.0f);
-				verts[squareNum*4+3] = new Vector3((x+1)*Square_Size, (Squares_Y*Square_Size) - (y+1)*Square_Size, 0.0f);
+				verts[squareNum*4  ] = new Vector3(x*Square_Size - halfXsize,     (Squares_Y*Square_Size) - y*Square_Size - halfYsize, 0.0f);
+				verts[squareNum*4+1] = new Vector3((x+1)*Square_Size - halfXsize, (Squares_Y*Square_Size) - y*Square_Size - halfYsize, 0.0f);
+				verts[squareNum*4+2] = new Vector3(x*Square_Size - halfXsize,     (Squares_Y*Square_Size) - (y+1)*Square_Size - halfYsize, 0.0f);
+				verts[squareNum*4+3] = new Vector3((x+1)*Square_Size - halfXsize, (Squares_Y*Square_Size) - (y+1)*Square_Size - halfYsize, 0.0f);
 
 				tris[squareNum*6  ] = squareNum*4;
 				tris[squareNum*6+1] = squareNum*4+1;

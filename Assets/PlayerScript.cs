@@ -57,6 +57,10 @@ public class PlayerScript : MonoBehaviour {
 		if(m_isDead)
 		{
 			//Reset controls?
+			m_thrustUp = false;
+			m_thrustRight = false;
+			m_thrustLeft = false;
+			particleSystem.enableEmission = false;
 			return;
 		}
 		
@@ -81,6 +85,7 @@ public class PlayerScript : MonoBehaviour {
 			Debug.Log("Fuel empty");
 			m_Fuel = 0f;
 		}
+		particleSystem.enableEmission = (m_thrustUp || m_thrustLeft || m_thrustRight) && m_Fuel > 0f;
 
 		if(!IsInside())
 		{

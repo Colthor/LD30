@@ -1,17 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\ShipChunkScript.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GameScript.cs">
     <Files>
-      <File FileName="Assets\ShipChunkScript.cs" Line="121" Column="64" />
-      <File FileName="Assets\TileMapScript.cs" Line="274" Column="126" />
-      <File FileName="Assets\GameScript.cs" Line="60" Column="41" />
-      <File FileName="Assets\TeleportScript.cs" Line="8" Column="12" />
+      <File FileName="Assets\GameScript.cs" Line="236" Column="3" />
+      <File FileName="Assets\PlayerScript.cs" Line="49" Column="1" />
+      <File FileName="Assets\ShipChunkScript.cs" Line="156" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore>
-      <Breakpoint file="E:\Docs\Unity\LD30\Assets\ShipChunkScript.cs" line="121" />
-    </BreakpointStore>
+    <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

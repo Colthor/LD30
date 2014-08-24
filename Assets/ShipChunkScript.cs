@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ShipChunkScript : MonoBehaviour {
@@ -76,7 +76,10 @@ public class ShipChunkScript : MonoBehaviour {
 		+ "XXX0X"
 	};
 
-	float m_thrustForce = 20000.0f;
+	public float m_thrustForce = 2000000.0f;
+	public float m_torque = 2000000.0f;
+
+
 	ChunkType m_myType = ChunkType.NormalChunk;
 
 	public ChunkType GetChunkType()
@@ -86,6 +89,8 @@ public class ShipChunkScript : MonoBehaviour {
 
 	public bool m_connectedWithBase=false;
 	int m_collideWithConnectedCount = 0;
+
+	int m_connectedCount = 1;
 
 	// Use this for initialization
 	void Start ()
@@ -168,6 +173,8 @@ public class ShipChunkScript : MonoBehaviour {
 				
 				go.transform.parent = transform;
 				Destroy(go.rigidbody2D);
+
+				m_connectedCount++;
 				
 			}
 		}
@@ -218,6 +225,14 @@ public class ShipChunkScript : MonoBehaviour {
 			{
 				rigidbody2D.AddForce(new Vector2(m_thrustForce, 0f));
 			}
+			if(Input.GetKey(globalScript.RotateLeftKey))
+			{
+				rigidbody2D.AddTorque(m_connectedCount * m_torque);
+			}
+			if(Input.GetKey(globalScript.RotateRightKey))
+			{
+				rigidbody2D.AddTorque(m_connectedCount * -m_torque);
+			}
 		}
 	}
 
@@ -247,6 +262,25 @@ public class ShipChunkScript : MonoBehaviour {
 			{
 				m_collideWithConnectedCount--;
 			}
+		}
+	}
+
+	//Spaceonaut is inside - tell them
+	void OnTriggerEnter2D(Collider2D coll)
+	{
+		if(coll.gameObject.tag == "Spaceonaut")
+		{
+			PlayerScript ps = coll.gameObject.GetComponent<PlayerScript>();
+			ps.SetInside(true);
+		}
+	}
+	//Spaceonaut is outside - tell them
+	void OnTriggerExit2D(Collider2D coll)
+	{
+		if(coll.gameObject.tag == "Spaceonaut")
+		{
+			PlayerScript ps = coll.gameObject.GetComponent<PlayerScript>();
+			ps.SetInside(false);
 		}
 	}
 }

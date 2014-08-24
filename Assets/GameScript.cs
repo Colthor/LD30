@@ -248,22 +248,22 @@ public class GameScript : MonoBehaviour {
 		}
 		GUI.skin = UISkin;
 
-		GUI.Label(new Rect(10, 10, 150, 25), "Oxygen");
+		GUI.Label(new Rect(10, 10, 200, 25), "Oxygen");
 		if(OxygenFraction > 0f)
 		{
 			GUI.skin.box.normal.background =  OxygenMeterTexture;
-			GUI.Box(new Rect(150, 10, 150 * OxygenFraction, 25), GUIContent.none);
+			GUI.Box(new Rect(200, 10, 150 * OxygenFraction, 25), GUIContent.none);
 		}
 		GUI.Label(new Rect(10, 35, 150, 25), "Fuel");
 		if(FuelFraction > 0f) 
 		{
 			GUI.skin.box.normal.background =  FuelMeterTexture;
-			GUI.Box(new Rect(150, 35, 150*FuelFraction, 25), GUIContent.none );
+			GUI.Box(new Rect(200, 35, 150*FuelFraction, 25), GUIContent.none );
 		}
 
 		
-		GUI.Label(new Rect(10, 60, 150, 25), "Power connected");
-		GUI.Label(new Rect(150, 60, 150, 25), "" + m_powerConnected + "/" + PowerChunksRequired);
+		GUI.Label(new Rect(10, 60, 200, 25), "Power Connected");
+		GUI.Label(new Rect(200, 60, 200, 25), "" + m_powerConnected + "/" + PowerChunksRequired);
 		if (m_teleporterConnected)
 		{
 			GUI.Label(new Rect(10, 85, 300, 25), "Teleporter connected!");
@@ -286,7 +286,7 @@ public class GameScript : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.green;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 + 25, 500, 250), "You've made it home!");
+			GUI.Label(new Rect(Screen.width / 2 - 255, Screen.height / 2 + 25, 5000, 250), "You've made it home!");
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;
 		}

@@ -9,11 +9,10 @@ then get the Spaceonaut to the teleporter.
 Controls
 ========
 
-Arrows   - movement
-Tab      - switch between ship and Spaceonaut control
-R        - restart game
+Arrows   - movement<br>
+Tab      - switch between ship and Spaceonaut control<br>
+R        - restart game<br>
 
-Extra Ship Controls
-
-Space    - Attach joining modules
-Del/PgDn - Rotate left/right
+Extra Ship Controls<br>
+Space    - Attach joining modules<br>
+Del/PgDn - Rotate left/right<br>

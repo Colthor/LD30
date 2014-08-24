@@ -4,6 +4,10 @@ using System.Collections;
 public class ShipChunkScript : MonoBehaviour {
 	public GameScript globalScript;
 	public GameObject TeleportPrefab;
+	public Material ConnectedMaterial;
+	public static int ChunkSquares = 5;
+	public static float ChunkSquareSize = 1f;
+
 
 	public enum ChunkType
 	{
@@ -98,17 +102,71 @@ public class ShipChunkScript : MonoBehaviour {
 	
 	}
 
+	string CombineLayouts(string BaseLayout, string ToMerge)
+	{
+		bool rotate = Random.value < 0.5f;
+		int xMin = 0, xStep = 1;
+		int yMin = 0, yStep = 1;
+		string output = "";
+
+		if(Random.value < 0.5f)
+		{
+			xMin = ChunkSquares-1;
+			xStep = -1;
+		}
+		if(Random.value < 0.5f)
+		{
+			yMin = ChunkSquares-1;
+			yStep = -1;
+		}
+		int i;
+		int basei = 0;
+		for(int x = xMin; x < ChunkSquares && x >= 0; x+=xStep)
+		{
+			for(int y = yMin; y < ChunkSquares && y >= 0; y+=yStep)
+			{
+				if(rotate)
+				{
+					i = x * ChunkSquares + y;
+				}
+				else
+				{
+					i = y * ChunkSquares + x;
+				}
+
+				if('X' != ToMerge[i])
+				{
+					output += ToMerge[i];
+				}
+				else
+				{
+					output += BaseLayout[basei];
+				}
+				basei++;
+			}
+		}
+
+		return output;
+	}
+
+	public void ConnectChunk()
+	{
+		GetComponent<MeshRenderer>().material = ConnectedMaterial;
+	}
+
 	public void InitialiseChunk(ChunkType chType)
 	{
 		int layoutNum = 0;
 		m_myType = chType;
 		GameObject teleporter = null;
+		bool MergeLayout = false;
 
 		switch(m_myType)
 		{
 			case ChunkType.BaseChunk:
 				m_connectedWithBase = true;
 				layoutNum = 0;
+				GetComponent<MeshRenderer>().material = ConnectedMaterial;
 			this.name = "BaseChunk";
 				break;
 
@@ -132,6 +190,7 @@ public class ShipChunkScript : MonoBehaviour {
 				Vector3 scale = new Vector3(1f, 1f, 1f);
 				if(Random.value < 0.5f) scale.x = -1f;
 				if(Random.value < 0.5f) scale.y = -1f;
+				if(Random.value < 0.75f) MergeLayout = true;
 				transform.localScale = scale;
 				transform.rotation = Quaternion.AngleAxis( (float) Random.Range(0,4) * 90f, Vector3.forward);
 				break;
@@ -139,7 +198,17 @@ public class ShipChunkScript : MonoBehaviour {
 
 
 		TileMapScript tms = GetComponent<TileMapScript>();
-		tms.LevelData = ChunkLayouts[layoutNum];
+		if(MergeLayout)
+		{
+			tms.LevelData = CombineLayouts(ChunkLayouts[layoutNum], ChunkLayouts[Random.Range(3, ChunkLayouts.Length)]);
+		}
+		else
+		{
+			tms.LevelData = ChunkLayouts[layoutNum];
+		}
+		tms.Squares_X = ChunkSquares;
+		tms.Squares_Y = ChunkSquares;
+		tms.Square_Size = ChunkSquareSize;
 		tms.GenerateMap();
 
 		//This is only here rather than above to work around some bug or obscurity in Unity
@@ -175,6 +244,7 @@ public class ShipChunkScript : MonoBehaviour {
 				Destroy(go.rigidbody2D);
 
 				m_connectedCount++;
+				scs.ConnectChunk();
 				
 			}
 		}

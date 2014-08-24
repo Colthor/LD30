@@ -54,7 +54,7 @@ public class TileMapScript : MonoBehaviour
 	MapSquare[,] MapArray;
 	public int Squares_X = 5;
 	public int Squares_Y = 5;
-	public int Square_Size = 32;
+	public float Square_Size = 32;
 	public string LevelData = "XXXXX"
 							+ "XXXXX"
 							+ "XXXXX"

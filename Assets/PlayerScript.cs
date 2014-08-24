@@ -8,7 +8,7 @@ public class PlayerScript : MonoBehaviour {
 	public float FuelMax = 5.0f;
 	public float LateralThrustMod = 0.5f;
 	
-	float m_thrustForce = 10.0f;
+	public float m_thrustForce = 20.0f;
 
 	int m_insideCount = 0;
 	float m_Oxygen;

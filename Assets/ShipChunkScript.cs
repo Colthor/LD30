@@ -7,6 +7,7 @@ public class ShipChunkScript : MonoBehaviour {
 	public Material ConnectedMaterial;
 	public static int ChunkSquares = 5;
 	public static float ChunkSquareSize = 1f;
+	public static float StayParticleProbability = 0.2f;
 
 
 	public enum ChunkType
@@ -279,27 +280,27 @@ public class ShipChunkScript : MonoBehaviour {
 	{
 		if(ChunkType.BaseChunk == m_myType && !globalScript.IsControllingPlayer())
 		{
-			if(Input.GetKey(globalScript.UpKey))
+			if(Input.GetKey(globalScript.UpKey1) || Input.GetKey(globalScript.UpKey2))
 			{
 				rigidbody2D.AddForce(new Vector2(0f, m_thrustForce));
 			}
-			if(Input.GetKey(globalScript.DownKey))
+			if(Input.GetKey(globalScript.DownKey1) || Input.GetKey(globalScript.DownKey2))
 			{
 				rigidbody2D.AddForce(new Vector2(0f, -m_thrustForce));
 			}
-			if(Input.GetKey(globalScript.LeftKey))
+			if(Input.GetKey(globalScript.LeftKey1) || Input.GetKey(globalScript.LeftKey2))
 			{
 				rigidbody2D.AddForce(new Vector2(-m_thrustForce, 0f));
 			}
-			if(Input.GetKey(globalScript.RightKey))
+			if(Input.GetKey(globalScript.RightKey1) || Input.GetKey(globalScript.RightKey2))
 			{
 				rigidbody2D.AddForce(new Vector2(m_thrustForce, 0f));
 			}
-			if(Input.GetKey(globalScript.RotateLeftKey))
+			if(Input.GetKey(globalScript.RotateLeftKey1) || Input.GetKey(globalScript.RotateLeftKey2))
 			{
 				rigidbody2D.AddTorque(m_connectedCount * m_torque);
 			}
-			if(Input.GetKey(globalScript.RotateRightKey))
+			if(Input.GetKey(globalScript.RotateRightKey1) || Input.GetKey(globalScript.RotateRightKey2))
 			{
 				rigidbody2D.AddTorque(m_connectedCount * -m_torque);
 			}
@@ -310,6 +311,20 @@ public class ShipChunkScript : MonoBehaviour {
 	{
 		if(coll.gameObject.tag == "ShipChunk" && !m_connectedWithBase)
 		{
+			foreach(ContactPoint2D p in coll.contacts)
+			{
+				
+				Vector2 d= Random.insideUnitCircle;
+				Vector3 pos = new Vector3(p.point.x + 0.5f*d.x, p.point.y+0.5f*d.y, 1f);
+				Vector3 vel = new Vector3(p.normal.x + 0.25f*d.x, p.normal.y+0.25f*d.y, 1f);
+				byte r, g, b;
+				r = (byte)Random.Range(192, 256);
+				g = (byte)Random.Range(128,r);
+				b = (byte)Random.Range(64,g);
+				Color32 col = new Color32(r, g, b, 255);
+				particleSystem.Emit(pos, vel, Random.Range(0.25f,0.5f), 1.0f, col);
+			}
+
 			ShipChunkScript scs = coll.gameObject.GetComponent<ShipChunkScript>();
 			if(scs.m_connectedWithBase)
 			{
@@ -319,6 +334,26 @@ public class ShipChunkScript : MonoBehaviour {
 				coll.gameObject.transform.parent = transform;
 				Destroy(coll.gameObject.rigidbody2D);*/
 
+			}
+		}
+	}
+
+	void OnCollisionStay2D(Collision2D coll)
+	{
+		if(coll.gameObject.tag == "ShipChunk" && !m_connectedWithBase && Random.value < StayParticleProbability)
+		{
+			foreach(ContactPoint2D p in coll.contacts)
+			{
+				
+				Vector2 d= Random.insideUnitCircle;
+				Vector3 pos = new Vector3(p.point.x + 0.5f*d.x, p.point.y+0.5f*d.y, 1f);
+				Vector3 vel = new Vector3(p.normal.x + 0.25f*d.x, p.normal.y+0.25f*d.y, 1f);
+				byte r, g, b;
+				r = (byte)Random.Range(192, 256);
+				g = (byte)Random.Range(128,r);
+				b = (byte)Random.Range(64,g);
+				Color32 col = new Color32(r, g, b, 255);
+				particleSystem.Emit(pos, vel, Random.Range(0.25f,0.5f), 1.0f, col);
 			}
 		}
 	}

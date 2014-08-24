@@ -4,12 +4,18 @@ using System.Collections;
 public class GameScript : MonoBehaviour {
 
 	public KeyCode SwitchControllingKey = KeyCode.Tab;
-	public KeyCode UpKey = KeyCode.UpArrow;
-	public KeyCode DownKey = KeyCode.DownArrow;
-	public KeyCode LeftKey = KeyCode.LeftArrow;
-	public KeyCode RightKey = KeyCode.RightArrow;
-	public KeyCode RotateLeftKey = KeyCode.Delete;
-	public KeyCode RotateRightKey = KeyCode.PageDown;
+	public KeyCode UpKey1 = KeyCode.UpArrow;
+	public KeyCode DownKey1 = KeyCode.DownArrow;
+	public KeyCode LeftKey1 = KeyCode.LeftArrow;
+	public KeyCode RightKey1 = KeyCode.RightArrow;
+	public KeyCode RotateLeftKey1 = KeyCode.Delete;
+	public KeyCode RotateRightKey1 = KeyCode.PageDown;
+	public KeyCode UpKey2 = KeyCode.W;
+	public KeyCode DownKey2 = KeyCode.S;
+	public KeyCode LeftKey2 = KeyCode.A;
+	public KeyCode RightKey2 = KeyCode.D;
+	public KeyCode RotateLeftKey2 = KeyCode.Q;
+	public KeyCode RotateRightKey2 = KeyCode.E;
 	public KeyCode ActionKey = KeyCode.Space;
 	public KeyCode RestartKey = KeyCode.R;
 
@@ -21,7 +27,9 @@ public class GameScript : MonoBehaviour {
 
 	public int FieldWidth = 6;
 	public int FieldHeight = 7;
+	public int OuterRows = 1;
 	public float GapWidth = 3.0f;
+	public float Variance = 1.0f;
 	public int PowerChunks = 3;
 	public int PowerChunksRequired = 2;
 
@@ -34,16 +42,19 @@ public class GameScript : MonoBehaviour {
 	bool m_teleporterConnected = false;
 	bool m_hasWon = false;
 	bool m_Restart = false;
+	bool m_doTitle = true;
 
 	// Use this for initialization
 	void Start ()
 	{
-		LoadLevel();	
+		m_doTitle = true;
+		//LoadLevel();	
 	}
 
 	void Restart()
 	{
 		m_Restart = true;
+		m_doTitle = false;
 		if(player)
 		{
 			Destroy(player);
@@ -103,17 +114,52 @@ public class GameScript : MonoBehaviour {
 		return controllingPlayer;
 	}
 
+	public void InitEasy()
+	{
+		FieldWidth = 5;
+		FieldHeight = 6;
+		OuterRows = 1;
+		GapWidth = 4.0f;
+		PowerChunks = 3;
+		PowerChunksRequired = 2;
+	}
+	
+	public void InitNormal()
+	{
+		FieldWidth = 6;
+		FieldHeight = 7;
+		OuterRows = 1;
+		GapWidth = 3.0f;
+		PowerChunks = 3;
+		PowerChunksRequired = 2;
+	}
+
+	public void InitHard()
+	{
+		FieldWidth = 8;
+		FieldHeight = 9;
+		OuterRows = 2;
+		GapWidth = 2.5f;
+		PowerChunks = 4;
+		PowerChunksRequired = 2;
+	}
+
 	public void LoadLevel()
 	{
 		m_powerConnected = 0;
 		m_teleporterConnected = false;
 		m_hasWon = false;
 		m_Restart = false;
+		m_doTitle = false;
+
+		particleSystem.Stop();
+		particleSystem.Clear();
+		particleSystem.Play();
 
 
 		//This should either get the Squares_* from TileMapScript, or set it, rather than being hardcoded...
-		float xSpread =5 * 1 + GapWidth;// (tms.Squares_X * tms.Square_Size + GapWidth);
-		float ySpread =5 * 1 + GapWidth;// (tms.Squares_Y * tms.Square_Size + GapWidth);
+		float xSpread = ShipChunkScript.ChunkSquares * ShipChunkScript.ChunkSquareSize + GapWidth; // (tms.Squares_X * tms.Square_Size + GapWidth);
+		float ySpread = ShipChunkScript.ChunkSquares * ShipChunkScript.ChunkSquareSize + GapWidth; // (tms.Squares_Y * tms.Square_Size + GapWidth);
 
 		int powerChunksRemaining = PowerChunks;
 		int chunksRemaining = FieldWidth * FieldHeight;
@@ -123,10 +169,13 @@ public class GameScript : MonoBehaviour {
 			for(int y = 0; y < FieldHeight; y++)
 			{
 				Vector3 pos =  new Vector3((float)x * xSpread, (float)y * ySpread, 10f);
+				Vector2 offset = Random.insideUnitCircle * Variance;
+				pos.x += offset.x;
+				pos.y += offset.y;
 				GameObject chunk = (GameObject) Instantiate(ShipChunkPrefab, pos, Quaternion.identity);
 				ShipChunkScript.ChunkType typeToAdd = ShipChunkScript.ChunkType.NormalChunk;
 				
-				if(x==1 && y == 1)
+				if(x==OuterRows && y == OuterRows)
 				{
 					//base chunk
 
@@ -141,7 +190,7 @@ public class GameScript : MonoBehaviour {
 				}
 				else
 				{
-					if(x == FieldWidth-2 && y == FieldHeight-2)
+					if(x == FieldWidth-(OuterRows+1) && y == FieldHeight-(OuterRows+1))
 					{
 						typeToAdd = ShipChunkScript.ChunkType.TeleporterChunk;
 					}
@@ -168,6 +217,10 @@ public class GameScript : MonoBehaviour {
 		{
 			m_Restart = false;
 			LoadLevel();
+		}
+		else if (m_doTitle)
+		{
+			//Anything here?
 		}
 		else
 		{
@@ -229,13 +282,54 @@ public class GameScript : MonoBehaviour {
 			{
 				Restart();
 			}
+			
+			if(Input.GetKeyDown(KeyCode.Escape))
+			{
+				Restart();
+				m_Restart = false;
+				m_doTitle = true;
+			}
 		}
 	}
 
-	void OnGUI()
+	void DoTitleGUI()
 	{
-		if(m_Restart) return;
+		int fontsize = GUI.skin.label.fontSize;
+		GUI.skin.label.fontSize = 64;
+		GUIContent title = new GUIContent( "Disconnect");
 
+		Vector2 titleSize = GUI.skin.label.CalcSize(title);
+
+		GUI.Label(new Rect((Screen.width - titleSize.x)/2, 32, titleSize.x, titleSize.y), title);
+
+		GUI.skin.label.fontSize = 32;
+
+		
+		GUI.Label(new Rect(64, 64 + titleSize.y, 512, 512), "Tab\n\nArrows / WSAD\nSpace\nQ & E / Del & PgDn\n\nR\nEsc");
+		GUI.Label(new Rect(384, 64 + titleSize.y, 512, 512), "Switch between ship and Spaceonaut control\nMovement\nAttach touching chunks to ship\nRotate ship\n\nRestart game\nMenu");
+
+
+		GUI.skin.label.fontSize = fontsize;
+		
+		if(GUI.Button(new Rect(64, Screen.height - 196, 256, 128), "Easy"))
+		{
+			InitEasy();
+			LoadLevel();
+		}
+		if(GUI.Button(new Rect(Screen.width/2 - 128, Screen.height - 196, 256, 128), "Normal"))
+		{
+			InitNormal();
+			LoadLevel();
+		}
+		if(GUI.Button(new Rect(Screen.width - (256+64), Screen.height - 196, 256, 128), "Hard"))
+		{
+			InitHard();
+			LoadLevel();
+		}
+	}
+
+	void DoGameGUI()
+	{
 		float OxygenFraction = 0f;
 		float FuelFraction = 0f;
 		bool IsDead = true;
@@ -246,8 +340,7 @@ public class GameScript : MonoBehaviour {
 			FuelFraction = ps.FuelFractionRemain();
 			IsDead = ps.IsDead();
 		}
-		GUI.skin = UISkin;
-
+		
 		GUI.Label(new Rect(10, 10, 200, 25), "Oxygen");
 		if(OxygenFraction > 0f)
 		{
@@ -260,7 +353,7 @@ public class GameScript : MonoBehaviour {
 			GUI.skin.box.normal.background =  FuelMeterTexture;
 			GUI.Box(new Rect(200, 35, 150*FuelFraction, 25), GUIContent.none );
 		}
-
+		
 		
 		GUI.Label(new Rect(10, 60, 200, 25), "Power Connected");
 		GUI.Label(new Rect(200, 60, 200, 25), "" + m_powerConnected + "/" + PowerChunksRequired);
@@ -268,27 +361,46 @@ public class GameScript : MonoBehaviour {
 		{
 			GUI.Label(new Rect(10, 85, 300, 25), "Teleporter connected!");
 		}
-
+		
 		if(IsDead && !m_hasWon)
 		{
 			Color textcol = GUI.skin.label.normal.textColor;
 			GUI.skin.label.normal.textColor = Color.red;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUI.Label(new Rect(Screen.width / 2 - 50, Screen.height / 2 + 25, 300, 250), "Dead!");
+			GUIContent LoseMsg = new GUIContent("Dead!");
+			GUI.Label(new Rect((Screen.width - GUI.skin.label.CalcSize(LoseMsg).x) / 2, Screen.height - 128, 5000, 250), LoseMsg);
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;
 		}
-
+		
 		if(m_hasWon)
 		{
 			Color textcol = GUI.skin.label.normal.textColor;
 			GUI.skin.label.normal.textColor = Color.green;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUI.Label(new Rect(Screen.width / 2 - 255, Screen.height / 2 + 25, 5000, 250), "You've made it home!");
+			GUIContent WinMsg = new GUIContent("You've made it home!");
+			GUI.Label(new Rect((Screen.width - GUI.skin.label.CalcSize(WinMsg).x) / 2, Screen.height - 128, 5000, 250), WinMsg);
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;
 		}
+	}
+
+	void OnGUI()
+	{
+		GUI.skin = UISkin;
+
+		if(m_Restart) return;
+
+		if(m_doTitle)
+		{
+			DoTitleGUI();
+		}
+		else
+		{
+			DoGameGUI();
+		}
+
 	}
 }

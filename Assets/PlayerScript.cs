@@ -66,9 +66,9 @@ public class PlayerScript : MonoBehaviour {
 		
 		if(globalScript.IsControllingPlayer())
 		{
-			m_thrustUp = Input.GetKey(globalScript.UpKey);
-			m_thrustLeft = Input.GetKey(globalScript.LeftKey);
-			m_thrustRight = Input.GetKey(globalScript.RightKey);
+			m_thrustUp = Input.GetKey(globalScript.UpKey1) || Input.GetKey(globalScript.UpKey2);
+			m_thrustLeft = Input.GetKey(globalScript.LeftKey1) || Input.GetKey(globalScript.LeftKey2);
+			m_thrustRight = Input.GetKey(globalScript.RightKey1) || Input.GetKey(globalScript.RightKey2);
 		}
 		
 		
@@ -82,7 +82,7 @@ public class PlayerScript : MonoBehaviour {
 		}
 		if(m_Fuel < 0f)
 		{
-			Debug.Log("Fuel empty");
+			//Debug.Log("Fuel empty");
 			m_Fuel = 0f;
 		}
 		particleSystem.enableEmission = (m_thrustUp || m_thrustLeft || m_thrustRight) && m_Fuel > 0f;
@@ -142,7 +142,7 @@ public class PlayerScript : MonoBehaviour {
 	{
 		if (coll.gameObject.tag == "ShipChunk" && coll.contacts[0].point.y < transform.position.y)
 		{
-			Debug.Log("Fuel charging");
+			//Debug.Log("Fuel charging");
 			m_Fuel = Mathf.Min(m_Fuel + Time.deltaTime, FuelMax);
 		}
 	}

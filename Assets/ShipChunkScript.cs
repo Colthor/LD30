@@ -3,6 +3,7 @@ using System.Collections;
 
 public class ShipChunkScript : MonoBehaviour {
 	public GameScript globalScript;
+	public GameObject TeleportPrefab;
 
 	public enum ChunkType
 	{
@@ -15,9 +16,21 @@ public class ShipChunkScript : MonoBehaviour {
 	string[] ChunkLayouts =
 	{
 		  "XXX0X"
-		+ "X000X"
-		+ "X000X"
-		+ "X000X"
+		+ "X444X"
+		+ "X444X"
+		+ "X444X"
+		+ "XXXXX",
+
+		  "XXX0X"
+		+ "X555X"
+		+ "X565X"
+		+ "X555X"
+		+ "XXXXX",
+
+		  "XXXXX"
+		+ "XEEEX"
+		+ "XEEEX"
+		+ "XEEEX"
 		+ "XXXXX",
 
 		  "XXXXX"
@@ -66,6 +79,11 @@ public class ShipChunkScript : MonoBehaviour {
 	float m_thrustForce = 20000.0f;
 	ChunkType m_myType = ChunkType.NormalChunk;
 
+	public ChunkType GetChunkType()
+	{
+		return m_myType;
+	}
+
 	public bool m_connectedWithBase=false;
 	int m_collideWithConnectedCount = 0;
 
@@ -83,29 +101,82 @@ public class ShipChunkScript : MonoBehaviour {
 		switch(m_myType)
 		{
 			case ChunkType.BaseChunk:
-			m_connectedWithBase = true;
-			break;
+				m_connectedWithBase = true;
+				layoutNum = 0;
+			this.name = "BaseChunk";
+				break;
 
 			case ChunkType.PowerChunk:
+				layoutNum = 2;
+				this.name = "PowerChunk";
 			break;
 
 			case ChunkType.TeleporterChunk:
+				layoutNum = 1;
+				this.name = "TeleporterChunk";
+
+				GameObject teleporter = (GameObject) Instantiate(TeleportPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity);
+				teleporter.GetComponent<TeleportScript>().globalScript = globalScript;
+				teleporter.transform.position = transform.position;
+				teleporter.transform.parent = transform; //This breaks it?!
 			break;
 
 			case ChunkType.NormalChunk:
-				layoutNum = Random.Range(0, ChunkLayouts.Length);
-			break;
+				layoutNum = Random.Range(3, ChunkLayouts.Length);
+				this.name = "NormalChunk " + layoutNum;
+				Vector3 scale = new Vector3(1f, 1f, 1f);
+				if(Random.value < 0.5f) scale.x = -1f;
+				if(Random.value < 0.5f) scale.y = -1f;
+				transform.localScale = scale;
+				transform.rotation = Quaternion.AngleAxis( (float) Random.Range(0,4) * 90f, Vector3.forward);
+				break;
 		}
-		
+
+
 		TileMapScript tms = GetComponent<TileMapScript>();
 		tms.LevelData = ChunkLayouts[layoutNum];
 		tms.GenerateMap();
 
+
+	}
+
+	void ConnectJoiningObjects()
+	{
+		GameObject[] gameObs;
+		gameObs = GameObject.FindGameObjectsWithTag("ShipChunk");
+
+		foreach (GameObject go in gameObs)
+		{
+			ShipChunkScript scs = go.GetComponent<ShipChunkScript>();
+			if(!scs.m_connectedWithBase && scs.TouchingBase())
+			{
+				scs.m_connectedWithBase = true;
+				if(scs.GetChunkType() == ChunkType.PowerChunk)
+				{
+					globalScript.AddPower();
+				}
+				else if(scs.GetChunkType() == ChunkType.TeleporterChunk)
+				{
+					globalScript.ConnectTeleporter();
+				}
+				
+				go.transform.parent = transform;
+				Destroy(go.rigidbody2D);
+				
+			}
+		}
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		if(ChunkType.BaseChunk == m_myType && !globalScript.IsControllingPlayer())
+		{
+			if(Input.GetKeyDown(globalScript.ActionKey))
+			{
+				ConnectJoiningObjects();
+			}
+		}
 	
 	}
 
@@ -146,41 +217,16 @@ public class ShipChunkScript : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D coll)
 	{
-		if(coll.gameObject.tag == "ShipChunk" && m_connectedWithBase)
+		if(coll.gameObject.tag == "ShipChunk" && !m_connectedWithBase)
 		{
 			ShipChunkScript scs = coll.gameObject.GetComponent<ShipChunkScript>();
-			if(!scs.m_connectedWithBase)
+			if(scs.m_connectedWithBase)
 			{
-				/*Vector2 anchorPoint1 = new Vector2(0f, 2f);
-				Vector2 anchorPoint2 = new Vector2(2f, -3f);
-				Vector2 anchorPoint3 = new Vector2(-2f, -3f);*/
 				m_collideWithConnectedCount++;
-				scs.m_connectedWithBase = true;
+				/*scs.m_connectedWithBase = true;
 
 				coll.gameObject.transform.parent = transform;
-				Destroy(coll.gameObject.rigidbody2D);
-
-				/*DistanceJoint2D joint = gameObject.AddComponent<DistanceJoint2D>();
-				joint.collideConnected = true;
-				joint.connectedBody = coll.gameObject.rigidbody2D;
-				joint.distance = Vector3.Distance(coll.gameObject.transform.position, transform.position);
-				joint.anchor = anchorPoint1;
-				joint.connectedAnchor = anchorPoint1;
-				scs.m_connectedWithBase = true;
-
-				joint = gameObject.AddComponent<DistanceJoint2D>();
-				joint.collideConnected = true;
-				joint.connectedBody = coll.gameObject.rigidbody2D;
-				joint.distance = Vector3.Distance(coll.gameObject.transform.position, transform.position);
-				joint.anchor = -anchorPoint2;
-				joint.connectedAnchor = -anchorPoint2;
-				
-				joint = gameObject.AddComponent<DistanceJoint2D>();
-				joint.collideConnected = true;
-				joint.connectedBody = coll.gameObject.rigidbody2D;
-				joint.distance = Vector3.Distance(coll.gameObject.transform.position, transform.position);
-				joint.anchor = -anchorPoint3;
-				joint.connectedAnchor = -anchorPoint3;*/
+				Destroy(coll.gameObject.rigidbody2D);*/
 
 			}
 		}

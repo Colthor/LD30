@@ -50,6 +50,7 @@
      <Compile Include="Assets\GameScript.cs" />
      <Compile Include="Assets\PlayerScript.cs" />
      <Compile Include="Assets\ShipChunkScript.cs" />
+     <Compile Include="Assets\TeleportScript.cs" />
      <Compile Include="Assets\TileMapScript.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

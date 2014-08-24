@@ -15,17 +15,51 @@ public class GameScript : MonoBehaviour {
 
 	public int FieldWidth = 5;
 	public int FieldHeight = 6;
-	public float GapWidth = 0.0f;
+	public float GapWidth = 3.0f;
+	public int PowerChunks = 3;
+	public int PowerChunksRequired = 2;
 
 
 	GameObject player;
 	GameObject baseChunk;
-	public bool controllingPlayer = false;
+	bool controllingPlayer = false;
+
+	int PowerConnected = 0;
+	bool TeleporterConnected = false;
 
 	// Use this for initialization
 	void Start ()
 	{
 		LoadLevel();	
+	}
+
+	void WinGame()
+	{
+		Debug.Log("You win! Hurrah!");
+	}
+
+	public void AddPower()
+	{
+		PowerConnected ++;
+	}
+
+	public void ConnectTeleporter()
+	{
+		TeleporterConnected = true;
+	}
+
+	public bool AttemptTeleport()
+	{
+		if (TeleporterConnected && PowerConnected >= PowerChunksRequired)
+		{
+			WinGame();
+			return true;
+		}
+		else
+		{
+			Debug.Log("We dinnae ha the pooer!");
+			return false;
+		}
 	}
 
 	public bool IsControllingPlayer()
@@ -35,6 +69,9 @@ public class GameScript : MonoBehaviour {
 
 	public void LoadLevel()
 	{
+		PowerConnected = 0;
+		TeleporterConnected = false;
+
 		baseChunk = (GameObject) Instantiate(ShipChunkPrefab, new Vector3(0f, 0f, 10f), Quaternion.identity);
 		ShipChunkScript scs = baseChunk.GetComponent<ShipChunkScript>();
 		scs.globalScript = this;
@@ -48,6 +85,9 @@ public class GameScript : MonoBehaviour {
 		float xSpread = (tms.Squares_X * tms.Square_Size + GapWidth);
 		float ySpread = (tms.Squares_Y * tms.Square_Size + GapWidth);
 
+		int powerChunksRemaining = PowerChunks;
+		int chunksRemaining = FieldWidth * FieldHeight;
+
 		for(int x = 0; x < FieldWidth; x++)
 		{
 			for(int y = 0; y < FieldHeight; y++)
@@ -59,18 +99,23 @@ public class GameScript : MonoBehaviour {
 				else
 				{
 					GameObject chunk = (GameObject) Instantiate(ShipChunkPrefab, new Vector3((float)x * xSpread, (float)y * ySpread, 10f), Quaternion.identity);
-					
+					ShipChunkScript.ChunkType typeToAdd = ShipChunkScript.ChunkType.NormalChunk;
+
 					ShipChunkScript chunkScript = chunk.GetComponent<ShipChunkScript>();
 					chunkScript.globalScript = this;
+
 					if(x == FieldWidth-1 && y == FieldHeight-1)
 					{
-						chunkScript.InitialiseChunk(ShipChunkScript.ChunkType.TeleporterChunk);
+						typeToAdd = ShipChunkScript.ChunkType.TeleporterChunk;
 					}
-					else
+					else if(powerChunksRemaining > 0 && ( Random.value < 0.2f || chunksRemaining < powerChunksRemaining + 3))
 					{
-						chunkScript.InitialiseChunk(ShipChunkScript.ChunkType.NormalChunk);
+						typeToAdd = ShipChunkScript.ChunkType.PowerChunk;
+						powerChunksRemaining--;
 					}
 
+					chunkScript.InitialiseChunk(typeToAdd);
+					chunksRemaining--;
 				}
 			}
 		}

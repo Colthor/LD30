@@ -7,12 +7,12 @@ public class TeleportScript : MonoBehaviour {
 
 	void Start()
 	{
-		Debug.Log("Teleporter created");
+		//Debug.Log("Teleporter created");
 	}
 
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		Debug.Log("Teleporter OnTriggerEnter");
+		//Debug.Log("Teleporter OnTriggerEnter");
 		if(other.gameObject.tag == "Spaceonaut")
 		{
 			if(null != globalScript)

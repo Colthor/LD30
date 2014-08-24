@@ -97,6 +97,7 @@ public class ShipChunkScript : MonoBehaviour {
 	{
 		int layoutNum = 0;
 		m_myType = chType;
+		GameObject teleporter = null;
 
 		switch(m_myType)
 		{
@@ -115,10 +116,9 @@ public class ShipChunkScript : MonoBehaviour {
 				layoutNum = 1;
 				this.name = "TeleporterChunk";
 
-				GameObject teleporter = (GameObject) Instantiate(TeleportPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity);
+				teleporter = (GameObject) Instantiate(TeleportPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity);
 				teleporter.GetComponent<TeleportScript>().globalScript = globalScript;
 				teleporter.transform.position = transform.position;
-				teleporter.transform.parent = transform; //This breaks it?!
 			break;
 
 			case ChunkType.NormalChunk:
@@ -137,6 +137,12 @@ public class ShipChunkScript : MonoBehaviour {
 		tms.LevelData = ChunkLayouts[layoutNum];
 		tms.GenerateMap();
 
+		//This is only here rather than above to work around some bug or obscurity in Unity
+		//If it's up there ^ the teleporter isn't created at all. It's odd.
+		if(null != teleporter)
+		{
+			teleporter.transform.parent = transform; //This breaks it?!
+		}
 
 	}
 

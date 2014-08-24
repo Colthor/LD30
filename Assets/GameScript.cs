@@ -222,6 +222,8 @@ public class GameScript : MonoBehaviour {
 				}
 			}
 			Camera.main.transform.position = camPos;
+			camPos.z = 25;
+			transform.position = camPos;
 
 			if(Input.GetKeyDown(RestartKey))
 			{
@@ -273,7 +275,7 @@ public class GameScript : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.red;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUI.Label(new Rect(Screen.width / 2 - 50, Screen.height / 2 - 25, 300, 250), "Dead!");
+			GUI.Label(new Rect(Screen.width / 2 - 50, Screen.height / 2 + 25, 300, 250), "Dead!");
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;
 		}
@@ -284,7 +286,7 @@ public class GameScript : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.green;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 - 25, 500, 250), "You've made it home!");
+			GUI.Label(new Rect(Screen.width / 2 - 200, Screen.height / 2 + 25, 500, 250), "You've made it home!");
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;
 		}

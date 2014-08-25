@@ -380,7 +380,7 @@ public class GameScript : MonoBehaviour {
 			GUI.skin.label.normal.textColor = Color.green;
 			int fontsize = GUI.skin.label.fontSize;
 			GUI.skin.label.fontSize = fontsize * 3;
-			GUIContent WinMsg = new GUIContent("You've made it home!");
+			GUIContent WinMsg = new GUIContent("You made it home!");
 			GUI.Label(new Rect((Screen.width - GUI.skin.label.CalcSize(WinMsg).x) / 2, Screen.height - 128, 5000, 250), WinMsg);
 			GUI.skin.label.normal.textColor = textcol;
 			GUI.skin.label.fontSize = fontsize;

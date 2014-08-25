@@ -311,6 +311,8 @@ public class ShipChunkScript : MonoBehaviour {
 	{
 		if(coll.gameObject.tag == "ShipChunk" && !m_connectedWithBase)
 		{
+			audio.pitch = Random.Range(0.8f, 1.2f);
+			audio.Play ();
 			foreach(ContactPoint2D p in coll.contacts)
 			{
 				

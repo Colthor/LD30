@@ -10,6 +10,9 @@ public class PlayerScript : MonoBehaviour {
 	
 	public float m_thrustForce = 20.0f;
 
+	public AudioClip ThrustSound;
+	public AudioClip CollisionSound;
+
 	int m_insideCount = 0;
 	float m_Oxygen;
 	float m_Fuel;
@@ -85,7 +88,17 @@ public class PlayerScript : MonoBehaviour {
 			//Debug.Log("Fuel empty");
 			m_Fuel = 0f;
 		}
-		particleSystem.enableEmission = (m_thrustUp || m_thrustLeft || m_thrustRight) && m_Fuel > 0f;
+		if((m_thrustUp || m_thrustLeft || m_thrustRight) && m_Fuel > 0f)
+		{
+			particleSystem.enableEmission = true;
+			audio.loop = true;
+			if(!audio.isPlaying || audio.time > 0.3f) audio.Play ();
+		}
+		else
+		{
+			audio.loop = false;
+			particleSystem.enableEmission = false;
+		}
 
 		if(!IsInside())
 		{
@@ -134,6 +147,15 @@ public class PlayerScript : MonoBehaviour {
 			{
 				rigidbody2D.AddForce(new Vector2(m_thrustForce, 0f));
 			}
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D coll)
+	{
+		if (coll.gameObject.tag == "ShipChunk")
+		{
+			//audio.pitch = Random.Range(0.8f, 1.2f);
+			audio.PlayOneShot (CollisionSound);
 		}
 	}
 

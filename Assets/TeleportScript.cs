@@ -17,7 +17,11 @@ public class TeleportScript : MonoBehaviour {
 		{
 			if(null != globalScript)
 			{
-				globalScript.AttemptTeleport();
+				if(globalScript.AttemptTeleport())
+				{
+					audio.Play ();
+					particleSystem.Play();
+				}
 			}
 		}
 	}

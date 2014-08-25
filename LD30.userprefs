@@ -2,9 +2,10 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\GameScript.cs">
     <Files>
-      <File FileName="Assets\GameScript.cs" Line="32" Column="29" />
-      <File FileName="Assets\PlayerScript.cs" Line="85" Column="6" />
-      <File FileName="Assets\ShipChunkScript.cs" Line="282" Column="1" />
+      <File FileName="Assets\GameScript.cs" Line="383" Column="43" />
+      <File FileName="Assets\PlayerScript.cs" Line="95" Column="43" />
+      <File FileName="Assets\ShipChunkScript.cs" Line="315" Column="18" />
+      <File FileName="Assets\TeleportScript.cs" Line="23" Column="28" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
